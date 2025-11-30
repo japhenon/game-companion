@@ -1,9 +1,11 @@
 // Service Worker for Complete Game Companion
 const CACHE_NAME = 'game-companion-v1';
 const urlsToCache = [
-  '/',
-  '/complete-game-companion.html',
-  '/index.html'
+  '/game-companion/',
+  '/game-companion/index.html',
+  '/game-companion/manifest.json',
+  '/game-companion/icon-192.png',
+  '/game-companion/icon-512.png'
 ];
 
 // Install service worker and cache files
