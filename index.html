@@ -547,6 +547,17 @@
             transform: scale(1.02);
         }
 
+        .column-scorecard {
+            margin-top: 1rem;
+        }
+
+        .player-column {
+            background: rgba(102, 126, 234, 0.05);
+            padding: 1rem;
+            border-radius: 12px;
+            min-width: 150px;
+        }
+
         .yahtzee-scorecard {
             display: grid;
             gap: 0.5rem;
@@ -742,7 +753,11 @@
                 timerDefault: 3,
                 instructions: "https://www.boardgamehalv.com/blockbuster/",
                 downloadInstructions: "https://www.boardgamehalv.com/blockbuster/",
-                rules: "Divide into two teams. One player from each team competes head-to-head. Draw a category card and set the timer. Teams take turns naming movies that fit the category. First team to collect 6 category cards wins the game."
+                rules: "Divide into two teams. One player from each team competes head-to-head. Draw a category card and set the timer. Teams take turns naming movies that fit the category. First team to collect 6 category cards wins the game.",
+                ageRange: "12+",
+                playerCount: "4-8",
+                requiresPurchase: true,
+                amazonLink: "https://www.amazon.com/s?k=blockbuster+board+game"
             },
             {
                 name: "Clue",
@@ -755,7 +770,11 @@
                 instructions: "https://www.officialgamerules.org/clue",
                 downloadInstructions: "https://www.hasbro.com/common/instruct/Clue_(2002).pdf",
                 specialScorecard: "clue",
-                rules: "Solve the murder mystery by determining WHO killed Mr. Boddy, WHERE, and with WHAT weapon. Roll dice to move around the mansion. Make suggestions to gather clues. Use deduction to eliminate suspects, weapons, and rooms. First to make a correct accusation wins!"
+                rules: "Solve the murder mystery by determining WHO killed Mr. Boddy, WHERE, and with WHAT weapon. Roll dice to move around the mansion. Make suggestions to gather clues. Use deduction to eliminate suspects, weapons, and rooms. First to make a correct accusation wins!",
+                ageRange: "8+",
+                playerCount: "3-6",
+                requiresPurchase: true,
+                amazonLink: "https://www.amazon.com/Hasbro-Gaming-Clue-Board-Game/dp/B00000DMJF"
             },
             {
                 name: "Codenames",
@@ -1332,6 +1351,12 @@
                         ${game.icon}
                     </div>
                     <h3 class="game-title">${game.name}</h3>
+                    ${game.ageRange || game.playerCount ? `
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; font-size: 0.85rem;">
+                            ${game.ageRange ? `<span style="background: rgba(102, 126, 234, 0.1); padding: 0.25rem 0.5rem; border-radius: 12px; color: var(--secondary); font-weight: 600;">👥 Ages ${game.ageRange}</span>` : ''}
+                            ${game.playerCount ? `<span style="background: rgba(102, 126, 234, 0.1); padding: 0.25rem 0.5rem; border-radius: 12px; color: var(--secondary); font-weight: 600;">🎮 ${game.playerCount} Players</span>` : ''}
+                        </div>
+                    ` : ''}
                     <div class="game-actions">
                         <button class="action-btn btn-primary" onclick="openGame('${game.name}')">
                             🎮 Play
@@ -1346,6 +1371,11 @@
                     ${game.dicegameLink ? `
                         <a href="${game.dicegameDepotUrl || 'https://dicegamedepot.com'}" target="_blank" class="action-btn btn-secondary" style="text-decoration: none; text-align: center; width: 100%; margin-top: 0.5rem; display: block;">
                             🎲 Dice Depot
+                        </a>
+                    ` : ''}
+                    ${game.requiresPurchase ? `
+                        <a href="${game.amazonLink}" target="_blank" class="action-btn" style="background: #FF9900; color: white; text-decoration: none; text-align: center; width: 100%; margin-top: 0.5rem; display: block; font-weight: 700; border-radius: 12px; padding: 0.6rem; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(255, 153, 0, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+                            💰 Buy on Amazon
                         </a>
                     ` : ''}
                     <div class="game-features">
@@ -1433,29 +1463,120 @@
         }
 
         function renderGenericScorecard(game) {
-            const savedData = JSON.parse(localStorage.getItem(`scorecard_${game.name}`) || '{"players": []}');
+            const savedData = JSON.parse(localStorage.getItem(`scorecard_${game.name}`) || '{"players": [{"name": "Player 1", "scores": []}, {"name": "Player 2", "scores": []}]}');
             
             return `
                 <div class="scorecard">
                     <div class="scorecard-header">
                         <h3>📊 Scorecard</h3>
                         <div class="scorecard-actions">
-                            <button class="score-btn" style="background: #10b981; color: white;" onclick="resetScores('${game.name}')">Reset Scores</button>
-                            <button class="score-btn" style="background: #ef4444; color: white;" onclick="resetAll('${game.name}')">Reset All</button>
+                            <button class="score-btn" style="background: #10b981; color: white;" onclick="addPlayerColumn('${game.name}')">+ Add Player</button>
+                            <button class="score-btn" style="background: #ef4444; color: white;" onclick="resetAllScorecard('${game.name}')">Reset All</button>
                             <button class="score-btn" style="background: #3b82f6; color: white;" onclick="downloadScorecard('${game.name}')">📥 Download</button>
                         </div>
                     </div>
-                    <div id="players_${game.name}">
-                        ${savedData.players.map((player, idx) => `
-                            <div class="player-input">
-                                <input type="text" class="score-input" placeholder="Player Name" value="${player.name}" onchange="saveScorecard('${game.name}')">
-                                <input type="number" class="score-input" placeholder="Score" value="${player.score || ''}" onchange="saveScorecard('${game.name}')">
-                            </div>
-                        `).join('')}
+                    <div id="scorecard_${game.name}" class="column-scorecard">
+                        ${renderColumnScorecard(game.name, savedData.players)}
                     </div>
-                    <button class="add-player-btn" onclick="addPlayer('${game.name}')">+ Add Player</button>
                 </div>
             `;
+        }
+
+        function renderColumnScorecard(gameName, players) {
+            const maxRounds = Math.max(...players.map(p => p.scores.length), 0);
+            
+            return `
+                <div style="display: grid; grid-template-columns: repeat(${players.length}, 1fr); gap: 1rem; overflow-x: auto;">
+                    ${players.map((player, playerIdx) => `
+                        <div class="player-column">
+                            <input type="text" 
+                                   class="score-input" 
+                                   value="${player.name}" 
+                                   onchange="updatePlayerColumnName('${gameName}', ${playerIdx}, this.value)"
+                                   style="text-align: center; font-weight: 700; margin-bottom: 0.5rem;">
+                            
+                            ${player.scores.map((score, scoreIdx) => `
+                                <div style="margin-bottom: 0.5rem;">
+                                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Round ${scoreIdx + 1}</div>
+                                    <input type="number" 
+                                           class="score-input" 
+                                           value="${score}" 
+                                           onchange="updatePlayerScore('${gameName}', ${playerIdx}, ${scoreIdx}, this.value)"
+                                           style="text-align: center;">
+                                </div>
+                            `).join('')}
+                            
+                            <div style="margin-bottom: 0.5rem;">
+                                <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Round ${player.scores.length + 1}</div>
+                                <input type="number" 
+                                       class="score-input" 
+                                       placeholder="Score" 
+                                       onchange="addNewScore('${gameName}', ${playerIdx}, this.value)"
+                                       style="text-align: center;">
+                            </div>
+                            
+                            <div style="background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 0.75rem; border-radius: 8px; margin-top: 1rem;">
+                                <div style="font-size: 0.75rem; color: white; margin-bottom: 0.25rem;">Total</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: white; text-align: center;">
+                                    ${player.scores.reduce((sum, s) => sum + (parseInt(s) || 0), 0)}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function updatePlayerColumnName(gameName, playerIdx, name) {
+            const savedData = JSON.parse(localStorage.getItem(`scorecard_${gameName}`) || '{"players": []}');
+            if (savedData.players[playerIdx]) {
+                savedData.players[playerIdx].name = name;
+                localStorage.setItem(`scorecard_${gameName}`, JSON.stringify(savedData));
+            }
+        }
+
+        function updatePlayerScore(gameName, playerIdx, scoreIdx, value) {
+            const savedData = JSON.parse(localStorage.getItem(`scorecard_${gameName}`) || '{"players": []}');
+            if (savedData.players[playerIdx]) {
+                savedData.players[playerIdx].scores[scoreIdx] = value;
+                localStorage.setItem(`scorecard_${gameName}`, JSON.stringify(savedData));
+                refreshScorecard(gameName);
+            }
+        }
+
+        function addNewScore(gameName, playerIdx, value) {
+            if (!value || value === '') return;
+            
+            const savedData = JSON.parse(localStorage.getItem(`scorecard_${gameName}`) || '{"players": []}');
+            if (savedData.players[playerIdx]) {
+                savedData.players[playerIdx].scores.push(value);
+                localStorage.setItem(`scorecard_${gameName}`, JSON.stringify(savedData));
+                refreshScorecard(gameName);
+            }
+        }
+
+        function addPlayerColumn(gameName) {
+            const savedData = JSON.parse(localStorage.getItem(`scorecard_${gameName}`) || '{"players": []}');
+            savedData.players.push({
+                name: `Player ${savedData.players.length + 1}`,
+                scores: []
+            });
+            localStorage.setItem(`scorecard_${gameName}`, JSON.stringify(savedData));
+            refreshScorecard(gameName);
+        }
+
+        function resetAllScorecard(gameName) {
+            localStorage.removeItem(`scorecard_${gameName}`);
+            refreshScorecard(gameName);
+        }
+
+        function refreshScorecard(gameName) {
+            const game = allGames.find(g => g.name === gameName);
+            const savedData = JSON.parse(localStorage.getItem(`scorecard_${gameName}`) || '{"players": [{"name": "Player 1", "scores": []}, {"name": "Player 2", "scores": []}]}');
+            const container = document.getElementById(`scorecard_${gameName}`);
+            if (container) {
+                container.innerHTML = renderColumnScorecard(gameName, savedData.players);
+            }
         }
 
         function renderYahtzeeScorecard(game) {
@@ -1822,9 +1943,39 @@
                     updateTimerDisplay(gameName);
                 } else {
                     stopTimer(gameName);
+                    playTimerSound();
                     alert(`Time's up for ${gameName}!`);
                 }
             }, 1000);
+        }
+
+        function playTimerSound() {
+            // Create AudioContext for playing sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Play a pleasant "ding" sound for 3 seconds
+            const startTime = audioContext.currentTime;
+            const duration = 3;
+            
+            // Create three tones for a pleasant bell sound
+            [523.25, 659.25, 783.99].forEach((frequency, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                // Set volume (0.4 = moderate volume, not too loud)
+                gainNode.gain.setValueAtTime(0, startTime + index * 0.1);
+                gainNode.gain.linearRampToValueAtTime(0.4, startTime + index * 0.1 + 0.1);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+                
+                oscillator.start(startTime + index * 0.1);
+                oscillator.stop(startTime + duration);
+            });
         }
 
         function stopTimer(gameName) {
@@ -2132,12 +2283,18 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
+                // Determine the correct path for service worker
+                const swPath = window.location.pathname.includes('/game-companion/') 
+                    ? '/game-companion/service-worker.js' 
+                    : './service-worker.js';
+                
+                navigator.serviceWorker.register(swPath)
                     .then(registration => {
                         console.log('Service Worker registered successfully:', registration.scope);
                     })
                     .catch(error => {
-                        console.log('Service Worker registration failed:', error);
+                        console.log('Service Worker registration failed (this is OK for local files):', error);
+                        // Service worker is optional - app still works without it
                     });
             });
         }
