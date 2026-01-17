@@ -207,7 +207,7 @@ export const GAMES = [
     duration: 15,
     icon: 'Flame',
     rulesLinks: [
-      { text: 'Official Rules', url: 'https://www.explodingkittens.com/pages/rules' }
+      { text: 'Official Rules', url: 'https://www.explodingkittens.com/pages/rules-kittens' }
     ],
     scoringType: 'custom',
     hasTimer: false,
