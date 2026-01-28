@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Game Companion" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#4CAF50" />
-    <meta
-      name="description"
-      content="A comprehensive game reference tool for families and game enthusiasts"
-    />
+    <meta name="description" content="A comprehensive game reference tool for families and game enthusiasts" />
+    <meta name="apple-mobile-web-app-icon-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/game-companion/manifest.json" />
+    <link rel="icon" href="/game-companion/favicon.ico" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%234CAF50' width='180' height='180'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'>GC</text></svg>" />
     <title>Complete Game Companion</title>
     <style>
       /* Prevent zoom and improve mobile experience */
@@ -38,5 +40,19 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script>
+      // Register service worker for offline support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/game-companion/service-worker.js')
+            .then(registration => {
+              console.log('Service Worker registered:', registration);
+            })
+            .catch(error => {
+              console.log('Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
