@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/game-companion/static/css/main.4daa47aa.css",
+    "main.js": "/game-companion/static/js/main.c42f215b.js",
+    "index.html": "/game-companion/index.html",
+    "main.4daa47aa.css.map": "/game-companion/static/css/main.4daa47aa.css.map",
+    "main.c42f215b.js.map": "/game-companion/static/js/main.c42f215b.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.4daa47aa.css",
+    "static/js/main.c42f215b.js"
+  ]
+}
