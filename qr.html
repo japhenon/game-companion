@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Companion - QR Code</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        #qrcode {
+            margin: 20px 0;
+            display: inline-block;
+        }
+        
+        .url {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #555;
+            word-break: break-all;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .instructions ol {
+            text-align: left;
+            display: inline-block;
+        }
+        
+        .instructions li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Game Companion</h1>
+        <p class="subtitle">Scan this QR code to add the app to your iPhone home screen</p>
+        
+        <div id="qrcode"></div>
+        
+        <div class="url">
+            https://japhenon.github.io/game-companion
+        </div>
+        
+        <div class="instructions">
+            <strong>How to use on iPhone:</strong>
+            <ol>
+                <li>Scan this QR code with your iPhone camera</li>
+                <li>Tap the notification that appears</li>
+                <li>Tap "Add to Home Screen"</li>
+                <li>Tap "Add" in the top right</li>
+            </ol>
+        </div>
+    </div>
+    
+    <script>
+        new QRCode(document.getElementById("qrcode"), {
+            text: "https://japhenon.github.io/game-companion",
+            width: 300,
+            height: 300,
+            colorDark: "#4CAF50",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
+</body>
+</html>
